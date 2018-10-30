@@ -39,7 +39,7 @@ System.register(['lodash'], function (_export, _context) {
           _classCallCheck(this, PiWebApiAnnotationsQueryCtrl);
 
           this.$scope = $scope;
-          this.annotation.query = this.annotation.query || {};
+          //this.annotation.query = (this.annotation.query || {})
           this.databases = [];
           this.templates = [];
           this.getDatabases();
@@ -47,7 +47,9 @@ System.register(['lodash'], function (_export, _context) {
 
         _createClass(PiWebApiAnnotationsQueryCtrl, [{
           key: 'templateChanged',
-          value: function templateChanged() {}
+          value: function templateChanged() {
+            console.log('Yay! templateChanged');
+          }
         }, {
           key: 'databaseChanged',
           value: function databaseChanged() {
@@ -59,13 +61,16 @@ System.register(['lodash'], function (_export, _context) {
             var ctrl = this;
             ctrl.datasource.getDatabases(this.datasource.afserver.webid).then(function (dbs) {
               ctrl.databases = dbs;
+              if (ctrl.annotation.database) ctrl.getEventFrames();
             });
           }
         }, {
           key: 'getEventFrames',
           value: function getEventFrames() {
+            console.log('Yay! getEventFrames');
+            console.log(this);
             var ctrl = this;
-            ctrl.datasource.getEventFrameTemplates(ctrl.database.WebId).then(function (templates) {
+            ctrl.datasource.getEventFrameTemplates(ctrl.annotation.database.WebId).then(function (templates) {
               ctrl.templates = templates;
             });
           }

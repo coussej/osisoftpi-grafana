@@ -46,8 +46,8 @@ export class PiWebApiDatasource {
    * @memberOf PiWebApiDatasource
    */
   eventFrameToAnnotation (annotationOptions, endTime, eventFrame) {
-    if (annotationOptions.regex && annotationOptions.regex.enable) {
-      eventFrame.Name = eventFrame.Name.replace(new RegExp(annotationOptions.regex.search), annotationOptions.regex.replace)
+    if (annotationOptions.regexReplace && annotationOptions.regexReplace.enable) {
+      eventFrame.Name = eventFrame.Name.replace(new RegExp(annotationOptions.regexReplace.search), annotationOptions.regexReplace.replace)
     }
 
     return {
@@ -185,28 +185,42 @@ export class PiWebApiDatasource {
       return this.$q.when([])
     }
 
-    var query = this.templateSrv.replace(options.annotation.query, {}, 'glob')
+    // var query = this.templateSrv.replace(options.annotation.query, {}, 'glob')
     var annotationOptions = {
       name: options.annotation.name,
       datasource: options.annotation.datasource,
       enable: options.annotation.enable,
       iconColor: options.annotation.iconColor,
       showEndTime: options.annotation.showEndTime,
-      regex: options.annotation.regex,
-      query: query
+      regexFilter: options.annotation.regexfilter,
+      regexReplace: options.annotation.regexreplace,
+      category: options.annotation.category,
+      template: options.annotation.template
     }
 
+    var url = this.url + '/assetdatabases/' + this.afdatabase.webid + '/eventframes?' +
+      'startTime=' + options.range.from.toJSON() +
+      '&endTime=' + options.range.to.toJSON()
+    if (annotationOptions.category) url += '&categoryName=' + annotationOptions.category
+    if (annotationOptions.template) url += '&templateName=' + annotationOptions.template.Name
+    
     return this.backendSrv.datasourceRequest({
-      url: this.url + '/assetdatabases/' + this.afdatabase.webid + '/eventframes?categoryName=' + annotationOptions.query +
-                                                                               '&startTime=' + options.range.from.toJSON() +
-                                                                               '&endTime=' + options.range.to.toJSON(),
+      url: url,
       // data: annotationQuery,
       method: 'GET'
     }).then(result => {
-      var annotations = _.map(result.data.Items, _.curry(this.eventFrameToAnnotation)(annotationOptions, false))
+      var items = result.data.Items
+      if (annotationOptions.regexFilter && annotationOptions.regexFilter.enable) {
+        var filter = new RegExp(annotationOptions.regexFilter.search)
+        items = _.filter(result.data.Items, i => {
+          return filter.test(i.Name)
+        })
+      } 
+      console.log(items)
 
+      var annotations = _.map(items, _.curry(this.eventFrameToAnnotation)(annotationOptions, false))
       if (options.annotation.showEndTime) {
-        var ends = _.map(result.data.Items, _.curry(this.eventFrameToAnnotation)(annotationOptions, true))
+        var ends = _.map(items, _.curry(this.eventFrameToAnnotation)(annotationOptions, true))
         _.each(ends, end => { annotations.push(end) })
       }
 

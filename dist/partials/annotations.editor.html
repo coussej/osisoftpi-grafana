@@ -20,9 +20,21 @@
 <div class="gf-form-inline">
   <div class="gf-form">
     <label class="gf-form-label query-keyword width-8">Categories</label>
-    <input type="text" class="gf-form-input" ng-model='ctrl.annotation.query' placeholder=""></input>
+    <input type="text" class="gf-form-input" ng-model='ctrl.annotation.category' placeholder=""></input>
   </div>  
-<div class="gf-form">
+</div>
+
+<div class="gf-form-inline">
+  <div class="gf-form">
+    <gf-form-switch class="gf-form" label="Enable Name Regex Filter" label-class="query-keyword" checked="ctrl.annotation.regexfilter.enable"
+        on-change="ctrl.targetBlur()">
+      </gf-form-switch>
+    <div class="gf-form max-width-30">
+      <label class="gf-form-label query-keyword">Search</label>
+      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regexfilter.search' placeholder="(.*)"></input>
+    </div>
+  </div>
+</div>
 
 <div class="gf-form-inline">
   <div class="gf-form">
