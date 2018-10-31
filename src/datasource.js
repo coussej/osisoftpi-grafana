@@ -47,7 +47,8 @@ export class PiWebApiDatasource {
    */
   eventFrameToAnnotation (annotationOptions, endTime, eventFrame) {
     if (annotationOptions.regexReplace && annotationOptions.regexReplace.enable) {
-      eventFrame.Name = eventFrame.Name.replace(new RegExp(annotationOptions.regexReplace.search), annotationOptions.regexReplace.replace)
+      var search = this.replaceTemplateVarsWithValues(annotationOptions.regexReplace.search)
+      eventFrame.Name = eventFrame.Name.replace(new RegExp(search), annotationOptions.regexReplace.replace)
     }
 
     return {
@@ -59,6 +60,27 @@ export class PiWebApiDatasource {
             '<br />End: ' + eventFrame.EndTime
       // tags: eventFrame.CategoryNames.join()
     }
+  }
+
+  /**
+   * Replaces template variables with their values in a string
+   * @param {any} text - text in which to look for template vars
+   * @returns - Text
+   * 
+   * @memberOf PiWebApiDatasource
+   */
+  replaceTemplateVarsWithValues (text) {
+    
+    var result = text
+    if (this.templateSrv.variables) {
+      this.templateSrv.variables.forEach(v => {
+        result = result.replace('[[' + v.name + ']]', v.current.value)
+        result = result.replace('$' + v.name, v.current.value)
+      })
+    }
+
+    return result
+
   }
 
   /**
@@ -211,7 +233,8 @@ export class PiWebApiDatasource {
     }).then(result => {
       var items = result.data.Items
       if (annotationOptions.regexFilter && annotationOptions.regexFilter.enable) {
-        var filter = new RegExp(annotationOptions.regexFilter.search)
+        var search = this.replaceTemplateVarsWithValues(annotationOptions.regexFilter.search)
+        var filter = new RegExp(search)
         items = _.filter(result.data.Items, i => {
           return filter.test(i.Name)
         })

@@ -95,7 +95,8 @@ System.register(['angular', 'lodash'], function (_export, _context) {
           key: 'eventFrameToAnnotation',
           value: function eventFrameToAnnotation(annotationOptions, endTime, eventFrame) {
             if (annotationOptions.regexReplace && annotationOptions.regexReplace.enable) {
-              eventFrame.Name = eventFrame.Name.replace(new RegExp(annotationOptions.regexReplace.search), annotationOptions.regexReplace.replace);
+              var search = this.replaceTemplateVarsWithValues(annotationOptions.regexReplace.search);
+              eventFrame.Name = eventFrame.Name.replace(new RegExp(search), annotationOptions.regexReplace.replace);
             }
 
             return {
@@ -105,6 +106,20 @@ System.register(['angular', 'lodash'], function (_export, _context) {
               text: eventFrame.Name + '<br />Start: ' + eventFrame.StartTime + '<br />End: ' + eventFrame.EndTime
               // tags: eventFrame.CategoryNames.join()
             };
+          }
+        }, {
+          key: 'replaceTemplateVarsWithValues',
+          value: function replaceTemplateVarsWithValues(text) {
+
+            var result = text;
+            if (this.templateSrv.variables) {
+              this.templateSrv.variables.forEach(function (v) {
+                result = result.replace('[[' + v.name + ']]', v.current.value);
+                result = result.replace('$' + v.name, v.current.value);
+              });
+            }
+
+            return result;
           }
         }, {
           key: 'buildQueryParameters',
@@ -228,7 +243,8 @@ System.register(['angular', 'lodash'], function (_export, _context) {
             }).then(function (result) {
               var items = result.data.Items;
               if (annotationOptions.regexFilter && annotationOptions.regexFilter.enable) {
-                var filter = new RegExp(annotationOptions.regexFilter.search);
+                var search = _this3.replaceTemplateVarsWithValues(annotationOptions.regexFilter.search);
+                var filter = new RegExp(search);
                 items = _.filter(result.data.Items, function (i) {
                   return filter.test(i.Name);
                 });

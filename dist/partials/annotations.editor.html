@@ -31,23 +31,23 @@
       </gf-form-switch>
     <div class="gf-form max-width-30">
       <label class="gf-form-label query-keyword">Search</label>
-      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regexfilter.search' placeholder="(.*)"></input>
+      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regexfilter.search' placeholder=".*"></input>
     </div>
   </div>
 </div>
 
 <div class="gf-form-inline">
   <div class="gf-form">
-    <gf-form-switch class="gf-form" label="Enable Name Regex Replacement" label-class="query-keyword" checked="ctrl.annotation.regex.enable"
+    <gf-form-switch class="gf-form" label="Enable Name Regex Replacement" label-class="query-keyword" checked="ctrl.annotation.regexreplace.enable"
         on-change="ctrl.targetBlur()">
       </gf-form-switch>
     <div class="gf-form max-width-30">
       <label class="gf-form-label query-keyword">Search</label>
-     <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regex.search' placeholder="(.*)"></input>
+     <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regexreplace.search' placeholder="(.*)"></input>
     </div>
     <div class="gf-form max-width-30">
       <label class="gf-form-label query-keyword">Replace</label>
-      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regex.replace' placeholder="$1"></input>
+      <input type="text" class="gf-form-input" ng-model='ctrl.annotation.regexreplace.replace' placeholder="$1"></input>
     </div>
   </div>
 </div>
